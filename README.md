@@ -53,6 +53,12 @@ Toda la aplicación se desarrolla, construye y despliega como una sola unidad. E
 - Seguridad de manera independiente (autenticación, autorización, cifrado, etc.)
 - Evitar el acoplamiento excesivo y dependencia entre ellos
 
+## Patrones
+
+- [Request-Response](https://docs.nestjs.com/microservices/basics#request-response): los mensajes estilo solicitud-respuesta son utiles cuando se necesita intercambiar mensajes entre varios servicios externos. Con este paradigma, puede estar seguro de que el servicio ha recibido realmente el mensaje. Estos pueden responder de manera sincrónica o asincrónica.
+
+- [Event-based](https://docs.nestjs.com/microservices/basics#event-based): si bien el método de solicitud-respuesta es ideal para intercambiar mensajes entre servicios, es menos adecuado cuando el estilo del mensaje se basa en _eventos_, es decir, cuando solo desea publicar eventos sin esperar una respuesta, por ejemplo, cuando solo se desea notificar a otro servicio que se ha producido determinada acción en otra parte de la app.
+
 ---
 
 **_Créditos_**

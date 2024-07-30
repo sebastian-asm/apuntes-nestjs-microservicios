@@ -18,6 +18,6 @@ async function bootstrap() {
     })
   )
   await app.listen()
-  logger.log(`✅ Products MS running on port ${envs.port}`)
+  logger.log(`👉 Products MS running on port ${envs.port}`)
 }
 bootstrap()

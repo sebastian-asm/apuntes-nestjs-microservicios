@@ -39,6 +39,10 @@ Toda la aplicación se desarrolla, construye y despliega como una sola unidad. E
   equipos en el cuarta capa del modelo OSI,
   confiable y ordenada
 
+## Gateway
+
+Se podría entender como un típico RESTful api pero con la diferencia que no contiene conexiones a bases de datos, ya que su única responsabilidad es conectar las peticiones del cliente con el respectivo microservicio.
+
 ![Microservicios](/public/image.png)
 
 ## Buenas prácticas

@@ -63,7 +63,25 @@ Se podría entender como un típico RESTful api pero con la diferencia que no co
 
 - [Event-based](https://docs.nestjs.com/microservices/basics#event-based): si bien el método de solicitud-respuesta es ideal para intercambiar mensajes entre servicios, es menos adecuado cuando el estilo del mensaje se basa en _eventos_, es decir, cuando solo desea publicar eventos sin esperar una respuesta, por ejemplo, cuando solo se desea notificar a otro servicio que se ha producido determinada acción en otra parte de la app.
 
----
+## [NATS](https://nats.io/) (Broker)
+
+Actúa como el sistema nervioso central para aplicaciones distribuidas (Microservicios), soportando transmisión de datos en tiempo real y balanceo de carga.
+
+- Trabaja con mensajería tipo publicar y suscribir
+- Hay temas (topics/subjects) a los cuales se escucha
+- Puede tener múltiples escuchas (listeners) al mismo topic
+- Pensado en para escalamiento horizontal
+- Seguridad, balanceo de carga incluído
+- Payload agnóstico
+- Rápido y eficiente
+
+**Levantas NATS en Docker de manera rápida:**
+
+```shell
+docker run -d --name nats-main -p 4222:4222 -p 8222:8222 nats
+```
+
+![NATS](/public/image2.png)
 
 **_Créditos_**
 

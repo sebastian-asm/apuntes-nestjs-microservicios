@@ -3,30 +3,30 @@ import { ClientProxy, RpcException } from '@nestjs/microservices'
 import { firstValueFrom } from 'rxjs'
 
 import { PaginationDto } from 'src/common'
-import { PRODUCTS_MS } from 'src/config'
+import { NATS_SERVICE } from 'src/config'
 import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 
 @Controller('products')
 export class ProductsController {
-  constructor(@Inject(PRODUCTS_MS) private readonly productsClient: ClientProxy) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsClient.send({ cmd: 'create_product' }, createProductDto)
+    return this.client.send({ cmd: 'create_product' }, createProductDto)
   }
 
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
     // send manda una petición y espera una respuesta
-    return this.productsClient.send({ cmd: 'find_all_products' }, paginationDto)
+    return this.client.send({ cmd: 'find_all_products' }, paginationDto)
   }
 
   @Get(':id')
   async findOneProduct(@Param('id') id: string) {
     // alternativa 1
     try {
-      return await firstValueFrom(this.productsClient.send({ cmd: 'find_one_product' }, { id }))
+      return await firstValueFrom(this.client.send({ cmd: 'find_one_product' }, { id }))
     } catch (error) {
       throw new RpcException(error)
     }
@@ -42,7 +42,7 @@ export class ProductsController {
   @Delete(':id')
   async deleteProduct(@Param('id') id: string) {
     try {
-      return await firstValueFrom(this.productsClient.send({ cmd: 'delete_product' }, { id }))
+      return await firstValueFrom(this.client.send({ cmd: 'delete_product' }, { id }))
     } catch (error) {
       throw new RpcException(error)
     }
@@ -51,7 +51,7 @@ export class ProductsController {
   @Patch(':id')
   async updateProduct(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     try {
-      return await firstValueFrom(this.productsClient.send({ cmd: 'update_product' }, { id: +id, ...updateProductDto }))
+      return await firstValueFrom(this.client.send({ cmd: 'update_product' }, { id: +id, ...updateProductDto }))
     } catch (error) {
       throw new RpcException(error)
     }

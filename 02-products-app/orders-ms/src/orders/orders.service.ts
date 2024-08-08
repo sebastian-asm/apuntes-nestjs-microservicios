@@ -3,14 +3,14 @@ import { ClientProxy, RpcException } from '@nestjs/microservices'
 import { PrismaClient } from '@prisma/client'
 
 import { ChangeOrderStatusDto, CreateOrderDto, OrderPaginationDto } from './dto'
-import { PRODUCTS_MS } from 'src/config'
+import { NATS_SERVICE } from 'src/config'
 import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
   private readonly logger = new Logger('OrdersMS')
 
-  constructor(@Inject(PRODUCTS_MS) private readonly productsClient: ClientProxy) {
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {
     super()
   }
 
@@ -22,7 +22,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
   async create(createOrderDto: CreateOrderDto) {
     try {
       const productsIds = createOrderDto.items.map(({ productId }) => productId)
-      const products: any[] = await firstValueFrom(this.productsClient.send({ cmd: 'validate_products' }, productsIds))
+      const products: any[] = await firstValueFrom(this.client.send({ cmd: 'validate_products' }, productsIds))
       const totalAmount = createOrderDto.items.reduce((acc, orderItem) => {
         const price = products.find((product) => product.id === orderItem.productId).price
         return acc + price * orderItem.quantity
@@ -96,7 +96,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     })
     if (!order) throw new RpcException({ status: HttpStatus.NOT_FOUND, message: 'La orden no existe' })
     const productsIds = order.OrderItem.map(({ productId }) => productId)
-    const products: any[] = await firstValueFrom(this.productsClient.send({ cmd: 'validate_products' }, productsIds))
+    const products: any[] = await firstValueFrom(this.client.send({ cmd: 'validate_products' }, productsIds))
     return {
       ...order,
       OrderItem: order.OrderItem.map((item) => ({

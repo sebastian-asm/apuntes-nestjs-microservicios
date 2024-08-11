@@ -75,10 +75,16 @@ Actúa como el sistema nervioso central para aplicaciones distribuidas (Microser
 - Payload agnóstico
 - Rápido y eficiente
 
-**Levantas NATS en Docker de manera rápida:**
+**Levantar NATS en Docker de manera rápida:**
 
 ```shell
 docker run -d --name nats-main -p 4222:4222 -p 8222:8222 nats
+```
+
+**Levantar mediante Docker Compose:**
+
+```shell
+docker compose up --build
 ```
 
 ![NATS](/public/image2.png)

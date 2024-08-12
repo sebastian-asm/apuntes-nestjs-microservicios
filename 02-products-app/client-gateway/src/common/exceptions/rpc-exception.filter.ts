@@ -8,6 +8,15 @@ export class ExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse()
     const rpcError = exception.getError()
 
+    // capturando el error cuando un ms esta caído
+    if (rpcError.toString().includes('Empty response')) {
+      const message = rpcError.toString().substring(0, rpcError.toString().indexOf('(') - 1)
+      return response.status(500).json({
+        status: 500,
+        message
+      })
+    }
+
     if (typeof rpcError === 'object' && 'status' in rpcError && 'message' in rpcError)
       return response.status(rpcError.status).json(rpcError)
 

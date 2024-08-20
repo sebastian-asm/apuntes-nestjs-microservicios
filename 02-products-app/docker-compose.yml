@@ -65,3 +65,12 @@ services:
       - STRIPE_SUCCESS_URL=http://localhost:3000/payments/success
       - STRIPE_CANCEL_URL=http://localhost:3000/payments/cancel
       - STRIPE_ENDPOINT_SECRET=whsec_1Hth3M6CcOteT52kI7x0UMqZTx9hScsi
+
+  auth-ms:
+    build: ./auth-ms
+    volumes:
+      - ./auth-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3005
+      - NATS_SERVERS=nats://nats-server:4222

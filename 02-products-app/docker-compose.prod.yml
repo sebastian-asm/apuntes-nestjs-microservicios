@@ -1,0 +1,63 @@
+services:
+  nats-server:
+    image: nats:latest
+
+  client-gateway:
+    build:
+      context: ./client-gateway
+      dockerfile: dockerfile.prod
+    image: client-gateway-prod
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+
+  products-ms:
+    build:
+      context: ./products-ms
+      dockerfile: dockerfile.prod
+    image: products-ms-prod
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=file:./dev.db
+
+  orders-ms:
+    build:
+      context: ./orders-ms
+      dockerfile: dockerfile.prod
+      # enviando valores al procesor de construcción en el archivo dockerfile
+      args:
+        - ORDERS_DB_URL=${ORDERS_DB_URL}
+    image: orders-ms-prod
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=${ORDERS_DB_URL}
+
+  payments-ms:
+    build:
+      context: ./payments-ms
+      dockerfile: dockerfile.prod
+    image: payments-ms-prod
+    ports:
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
+    environment:
+      - PORT=${PAYMENTS_MS_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+      - STRIPE_SECRET=sk_test_51IoDykC0OUyZ4NNW5ey4BrTphgdgB8aCqlCTvVOzF5VsEY6MXfzATkWAVjbV27PW6sIxZdrjbF73Qpb0bizKX2hO00eXY9etIj
+      - STRIPE_SUCCESS_URL=http://localhost:3000/payments/success
+      - STRIPE_CANCEL_URL=http://localhost:3000/payments/cancel
+      - STRIPE_ENDPOINT_SECRET=whsec_1Hth3M6CcOteT52kI7x0UMqZTx9hScsi
+
+  auth-ms:
+    build:
+      context: ./auth-ms
+      dockerfile: dockerfile.prod
+    image: auth-ms-prod
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=${MONGODB_URL}
+      - JWT_SECRET=${JWT_SECRET}

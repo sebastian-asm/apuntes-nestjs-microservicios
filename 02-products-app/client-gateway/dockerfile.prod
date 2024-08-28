@@ -1,0 +1,27 @@
+# 1. dependencias
+FROM node:21-alpine3.19 as deps
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+
+# 2. builder (construcción de la app)
+FROM node:21-alpine3.19 as build
+WORKDIR /usr/src/app
+# copiar de deps los módulos de node
+COPY --from=deps /usr/src/app/node_modules ./node_modules 
+# copiando todo el código de la app
+COPY . .
+RUN npm run build
+# dejando solo las dependencias necesarias para producción
+RUN npm ci -f --only=production && npm cache clean --force
+
+# 3. creación de la imágen
+FROM node:21-alpine3.19 as prod
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/node_modules ./node_modules 
+COPY --from=build /usr/src/app/dist ./dist
+ENV NODE_ENV=production
+# se crea el usuario "node" y comienza a ejecutar lo que sigue
+USER node
+EXPOSE 3000
+CMD [ "node", "dist/main.js" ]

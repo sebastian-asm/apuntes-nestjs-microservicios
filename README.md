@@ -75,19 +75,74 @@ Actúa como el sistema nervioso central para aplicaciones distribuidas (Microser
 - Payload agnóstico
 - Rápido y eficiente
 
+![NATS](/public/image2.png)
+
 **Levantar NATS en Docker de manera rápida:**
 
 ```shell
 docker run -d --name nats-main -p 4222:4222 -p 8222:8222 nats
 ```
 
-**Levantar mediante Docker Compose:**
+**Comandos Docker:**
+
+- Levantar compose: `docker compose up --build` o `docker compose -f <archivo_docker> up`
+- Construir imagen: `docker compose -f <archivo_docker> build`
+- Remover imagen: `docker compose -f <archivo_docker> down`
+
+## Kubernetes y Helm
+
+**Kubernetes** permite a los desarrolladores desplegar, actualizar y administrar aplicaciones de manera eficiente, proporcionando herramientas para la gestión de recursos, el balanceo de carga, la auto curación y la escalabilidad horizontal.
+
+![Cluster](/public/image3.png)
+
+- **Master Node**: controla toda la infraestructura siendo el más importante y puede tener réplicas. Cuenta con 4 piezas fundamentales:
+
+  - API Server (administración)
+  - Controller Manager (sabe lo que pasa)
+  - Scheduler (asegura el cambio de PODs)
+  - ETCD (almacenamiento en key:value)
+
+- **Worker Nodes**: es donde se realiza el proceso de la app, el cual esta relacionado a un proceso llamado _Kublets_.
+
+  - Kublets: proceso corriendo que permite la comunicación entre cluster
+
+- **PODs**: pequeña unidad efímera (que se destruye constantemente, por ejemplo, cuando se actualiza o cambia la imagen) que cuenta con su propia IP estática e id único.
+
+- **Secrets**: son valores en base64 que se configuran para no tener expuestos sus valores en archivos (yaml) o repositorios.
+
+![Services](/public/image4.png)
+
+**Crear deployment**
 
 ```shell
-docker compose up --build
+kubectl create deployment <nombre> --image=<registro/url/imagen> --dry-run=client -o yaml > deployment.yml
 ```
 
-![NATS](/public/image2.png)
+**Crear service**
+
+```shell
+kubectl create service clusterip <nombre> --tcp=<8888> --dry-run=client -o yaml > service.yml
+kubectl create service nodeport <nombre> --tcp=<3000> --dry-run=client -o yaml > service.yml
+```
+
+- **clusterip**: solo se puede acceder desde dentro del cluster
+- **nodeport**: se puede acceder desde fuera del cluster
+
+**Comandos Helm**
+
+- Crear configuración: `helm create <nombre>`
+- Aplicar configuración inicial: `helm install <nombre> .`
+- Aplicar actualizaciones: `helm upgrade <nombre> .`
+
+**Comandos Kubernetes**
+
+- Obtener PODs, deployments y services: `kubectl get <pods | deployments | services>`
+- Revisar todos los PODs: `kubectl describe pods`
+- Revisar un POD: `kubectl describe pod <nombre>`
+- Eliminar POD: `kubectl delete pod <nombre>`
+- Revisar logs: `kubectl logs <nombre>`
+- Obtener los secretos: `kubectl get secrets`
+- Ver el contenido de un secreto: `kubectl get secrets <nombre> -o yaml`
 
 **_Créditos_**
 
